@@ -3,6 +3,7 @@ import './App.css';
 import React, { Component,useEffect,useState,useRef } from 'react';
 import Web3 from 'web3';
 import Vote from './Vote'
+import Audio from './Audio'
 
 function App() {
   const [contract, setContract ] = useState(null);
@@ -47,6 +48,7 @@ function App() {
         <img src={logo} className="App-logo" alt="logo" />
       </header>
       <Vote contract={contract} account={account} />
+      <Audio />
     </div>
   );
 }
