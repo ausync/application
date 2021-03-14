@@ -1,29 +1,32 @@
-//import * as Tone from 'tone'
-import { Sampler,Synth } from "tone";
+import * as Tone from 'tone'
+import * as Api from './Api'
 import React, { Component,useEffect,useState,useRef } from 'react';
-import A1 from "./A1.mp3";
+
 
 function Audio() {
+    window.Tone = Tone;
     const [isLoaded, setLoaded] = useState(false);
     const sampler = useRef(null);
-    const synth = useRef(null);
+    const resource = useRef(null);
 
     useEffect(() => {
 
-        sampler.current = new Sampler(
-          { A1 },
+        sampler.current = new Tone.Sampler(
           {
+            urls: {A1: "A1.mp3"},
+            baseUrl: "http://localhost:3000/",
             onload: () => {
               setLoaded(true);
             }
           }
         ).toMaster();
 
-        synth.current = new Synth().toDestination();
+        resource.current = Api.get(Api.api("example1"));
+        setLoaded(true);
     }, []);
 
     const handleClick = () => sampler.current.triggerAttack("A1");
-    const handleClick2 = () => synth.current.triggerAttackRelease("C4", "8n");
+    const handleClick2 = () => eval(resource.current);
 
     //play a middle 'C' for the duration of an 8th note
     return (
