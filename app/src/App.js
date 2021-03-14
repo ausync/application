@@ -4,6 +4,7 @@ import React, { Component,useEffect,useState,useRef } from 'react';
 import Web3 from 'web3';
 import Vote from './Vote'
 import Audio from './Audio'
+import Mixer from './Mixer'
 
 function App() {
   const [contract, setContract ] = useState(null);
@@ -49,6 +50,7 @@ function App() {
       </header>
       <Vote contract={contract} account={account} />
       <Audio />
+      <Mixer />
     </div>
   );
 }
