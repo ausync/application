@@ -1,11 +1,10 @@
-import logo from './logo.svg';
 import './App.css';
 import React, { Component,useEffect,useState,useRef } from 'react';
 import Web3 from 'web3';
-import Vote from './Vote'
 import Audio from './Audio'
 import Mixer from './Mixer'
 import TopSongs from './TopSongs'
+import Layout from './Layout'
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 
 function App() {
@@ -47,18 +46,14 @@ function App() {
 
   return (
   <BrowserRouter>
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-      </header>
-      <Vote contract={contract} account={account} />
-    </div>
-    <Switch>
-        <Route path="/audio" component={Audio} />
-        <Route path="/song" component={Audio} />
-        <Route path="/mixer" component={Mixer} />
-        <Route path="/" component={TopSongs}/>
-    </Switch>
+    <Layout>
+        <Switch>
+            <Route path="/audio" component={Audio} />
+            <Route path="/song" component={Audio} />
+            <Route path="/mixer" component={Mixer} />
+            <Route path="/" component={TopSongs}/>
+        </Switch>
+     </Layout>
   </BrowserRouter>
   );
 }
