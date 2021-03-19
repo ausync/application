@@ -1,4 +1,4 @@
-import logo from './logo.svg';
+//import wave from './wave.png';
 
 export default function Layout({children}, props) {
 
@@ -6,8 +6,8 @@ export default function Layout({children}, props) {
 <div className="App">
   <header className="navbar navbar-dark bg-dark">
     <div className="container-fluid">
-        <a class="navbar-brand" href="/">
-          <img src={logo}  alt="logo" className="App-logo d-inline-block align-top" />
+        <a className="navbar-brand d-flex align-items-center" href="/">
+          <img src="/wave.svg"  alt="logo" className="App-logo d-inline-block align-top" />
           Ausync
         </a>
 
@@ -23,9 +23,9 @@ export default function Layout({children}, props) {
             </ul>
          </div>
         { /* TODO: search
-         <form class="d-flex">
-              <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search"/>
-              <button class="btn btn-outline-success" type="submit">Search</button>
+         <form className="d-flex">
+              <input className="form-control me-2" type="search" placeholder="Search" aria-label="Search"/>
+              <button className="btn btn-outline-success" type="submit">Search</button>
          </form> */ }
      </div>
   </header>

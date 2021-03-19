@@ -1,41 +1,38 @@
 import * as Tone from 'tone'
-import * as Api from './Api'
+import {postData} from './Api'
 import React, { Component,useEffect,useState,useRef } from 'react';
 
 
 export default function Mixer() {
     window.Tone = Tone;
-    const [isLoaded, setLoaded] = useState(false);
-    const sampler = useRef(null);
+    const [loading, setLoading] = useState(false);
+    const [greatSuccess, setGreatSuccess] = useState(false);
     const form = useRef(null);
     const [errorScript, setErrorScript] = useState(null);
 
     const handleSubmit = (event) => {
         event.preventDefault();
+        setLoading(true);
         const formData = new FormData(form.current);
         let object = {};
         formData.forEach(function(value, key){
             object[key] = value;
         });
-        let json = JSON.stringify(object);
+        // TODO: do some validation for a common format
+        object["created"] = Date.now();
 
-        // TODO: create content on ipfs and perform transaction
+        // TODO: perform transaction, (after verifying duplicates by hash on ipfs?)
+        postData(object)
+        .then( (hash) => {
+            setGreatSuccess(true);
+            console.log("created ipfs hash: ", hash);
+        })
+        .catch( (err) => alert("Error: " + err.message) )
+        .finally( () => { setLoading(false); })
     }
 
     useEffect(() => {
-
-        sampler.current = new Tone.Sampler(
-          {
-            urls: {A1: "A1.mp3"},
-            baseUrl: "/",
-            onload: () => {
-              setLoaded(true);
-            }
-          }
-        ).toDestination();
     }, []);
-
-    const handleClick = () => sampler.current.triggerAttack("A1");
 
     const playAudio = () => {
         try {
@@ -49,6 +46,13 @@ export default function Mixer() {
     return (
         <div className="p-3">
             <h4 className="text-center">Submit an NFT audio on the blockchain</h4>
+
+            { (greatSuccess) ?
+                <div className="alert alert-success" role="alert">
+                  Audio created successfully
+                </div> : <span></span>
+            }
+
             <form ref={form} onSubmit={handleSubmit} className="needs-validation">
                 <div className="form-group">
                     <label htmlFor="exampleInputTitle">Title</label>
@@ -73,15 +77,21 @@ export default function Mixer() {
                          </div>:
                          <span></span>
                      }
-                     <small id="scriptHelp" className="form-text text-muted">the Tone library is used, you can find more examples here <b>https://tonejs.github.io/docs</b> and here <b>https://tonejs.github.io/examples/</b>.</small>
+                     <small id="scriptHelp" className="form-text text-muted">the Tone library is used, you can find more examples here <b>https://tonejs.github.io/docs</b></small>
                 </div>
 
                 <div className="form-group text-center">
                     <button type="button" className="btn btn-info" onClick={playAudio}>
                         Play the audio
                     </button>
-
+                    { (loading) ?
+                    <button className="btn btn-danger m-3" type="button" disabled>
+                        <span className="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+                        Submitting on the blockchain...
+                    </button>:
                     <input className="btn btn-danger m-3" type="submit" value="Submit on blockchain" />
+                    }
+
                 </div>
 
 
