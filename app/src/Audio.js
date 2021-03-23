@@ -10,23 +10,9 @@ import {
 } from "react-router-dom";
 
 
-export default function Audio(props) {
-    let match = useRouteMatch();
-
-    return (
-        <Switch>
-            <Route path={`${match.path}/:audioId`}>
-              <AudioDetail />
-            </Route>
-            <Route path={match.path}>
-              <h3>Audio not found</h3>
-            </Route>
-        </Switch>
-    )
-}
-
 function oscillator() {
     // TODO: this is not working, is not getting values from Tone.js
+    // nice animation pure javascript https://www.cssscript.com/demo/audio-visualizer-with-html5-audio-element/
 
     const analyser = new Tone.Waveform();
     Tone.getDestination().connect(analyser);
@@ -70,20 +56,34 @@ function oscillator() {
     renderFrame();
 }
 
-function AudioDetail() {
+export default function AudioDetail(props) {
     const { audioId } = useParams();
 
     window.Tone = Tone;
     const [resource, setResource] = useState(null);
+    const [owner, setOwner] = useState(null);
 
     useEffect(async () => {
-        getData(audioId).then((data) => {
-            setResource(data);
-            console.log("data from ipfs: ", data);
-        }).catch( err => {
-            alert("Error occurred: ", err);
-        });
-    }, []);
+        if (!props.contract) {
+            return;
+        }
+        const { ownerOf,tokenURI } = props.contract.methods;
+
+        tokenURI(audioId).call().then( url => {
+            console.log("Token URI", url);
+            getData(url).then((data) => {
+                setResource(data);
+                console.log("data from ipfs: ", data);
+            }).catch( err => {
+                alert("Error occurred: " + err.message);
+            });
+         });
+
+        ownerOf(audioId).call().then( o =>
+            setOwner(o)
+         );
+
+    }, [props.contract]);
 
     const handleClick = () => {
         eval(resource.script);
@@ -109,9 +109,7 @@ function AudioDetail() {
                             </button>
                         </div>
                         <div className="mt-5">
-                            <button onClick={handleClick} className="btn btn-light">
-                                show on blockchain TODO
-                            </button>
+                            Owner: <a href={"https://ropsten.etherscan.io/address/" + owner} target="_blank">{owner}</a>
                         </div>
                     </div>
                     <div className="col">

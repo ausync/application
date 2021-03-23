@@ -7,7 +7,7 @@ const Audio = artifacts.require("Audio");
 contract("Audio", accounts => {
   it("should get 0 from total supply", () =>
     Audio.deployed()
-      .then(instance => instance.totalSupply.call())
+      .then(instance => instance.totalSupply())
       .then(total => {
         assert.equal(
           total.valueOf(),
@@ -17,32 +17,34 @@ contract("Audio", accounts => {
 
   it("should mint audio", () =>
     Audio.deployed()
-      .then(instance => instance.mintAudio.call(accounts[1], "ipfs://HASH"))
-      .then(token => {
-        assert.equal(
-          token.valueOf(),
-          1
-        );
+      .then(instance => instance.mintAudio(accounts[1], "ipfs://HASH"))
+      .then(t => {
+        assert.equal(t.logs[0].type, "mined");
+        assert.ok(t.tx);
       }));
 
   it("should not mint audio twice", async () => {
     let instance = await Audio.deployed();
-    let tokenCreated = await instance.mintAudio.call(accounts[1], "ipfs://HASH");
-    assert.equal(tokenCreated.valueOf(), 1);
+    let transaction = await instance.mintAudio(accounts[1], "ipfs://HASH_2");
+    assert.ok(transaction.tx);
 
-    // TODO: this should throw an exception but is doesnt, check if with https://github.com/rkalis/truffle-assertions something can be done
-    let tokenCreated2 = await instance.mintAudio.call(accounts[2], "ipfs://HASH");
-    assert.equal(tokenCreated2.valueOf(), 1);
+    instance.mintAudio(accounts[2], "ipfs://HASH_2")
+     .then(() => assert(false, "testThrow was supposed to throw but didn't."))
+     .catch(function(error) {
+            assert.include(
+                error.message,
+                'Hash already exists!'
+            )
+     });
   });
 
-  // This is not working with truffle for some reason
-  xit("should get URI from token id", async () => {
+  it("should get URI from token id", async () => {
     let instance = await Audio.deployed();
-    let tokenCreated = await instance.mintAudio.call(accounts[1], "ipfs://HASH");
-    assert.equal(tokenCreated.valueOf(), 1);
+    hash = "ipfs://HASH" + Math.random();
+    let tokenCreated = await instance.mintAudio(accounts[1], hash).then(t => instance.balanceOf(accounts[1]));
 
-    let tokenURI = await instance.tokenURI.call(1);
-    assert.equal(tokenURI.valueOf(), "ipfs://HASH");
+    let tokenURI = await instance.tokenURI(tokenCreated.valueOf());
+    assert.equal(tokenURI.valueOf(), hash);
   });
 
 });

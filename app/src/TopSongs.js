@@ -19,7 +19,7 @@ function timeSince(date) {
   return `${count} ${interval.label}${count !== 1 ? 's' : ''} ago`;
 }
 
-export default function TopSongs() {
+export default function TopSongs(props) {
 
     //TODO: remove those from ipfs
     //const songsF = ["QmWGL7eYnZpRXNe4oL4VLg8r1aKLjHvhAwrcTJNvND5TFo", "QmPtKSGdJ2RjwjwJWUVHpTKJAfHB5marrvqoFL1jS9tkir", "QmYnzDPSjPAD4F2HatEY2c4M7R58R58T6Esuqcw4iMb2hF"];
@@ -29,21 +29,35 @@ export default function TopSongs() {
     const [songs, setSongs] = useState(null);
 
     useEffect(async () => {
-            setSongs(await Promise.all(songsF.map(async s => {
-                                                    const response = await getData(s);
-                                                    response["hash"] = s;
-                                                    return response;
-                                                     })));
-    }, []);
+            if (!props.contract) {
+                return;
+            }
+            const { totalSupply,tokenURI } = props.contract.methods;
+
+            totalSupply().call().then(async total => {
+                 setSongs((await Promise.all(
+                    Array.from({length: parseInt(total)}, (x, i) =>
+                         tokenURI(i+1).call().then(async url => {
+                            const response = await getData(url);
+                            response["token"] = i+1;
+                            return response;
+                        }).catch(err => {
+                            console.log(err);
+                        })
+                    )
+                )).filter(e => e != null) );
+            });
+
+    }, [props.contract]);
 
     return (
         <div className="list-group">
-
+          <h1 className="h5 text-center p-4"> Latest added songs </h1>
           { (songs == null) ?
               <em>Loading...</em>:
 
               songs.map( song =>
-                <a key={song.hash} href={"/audio/"+song.hash} className="list-group-item list-group-item-action p-4" aria-current="true">
+                <a key={song.token} href={"/audio/"+song.token} className="list-group-item list-group-item-action p-4" aria-current="true">
                     <div className="d-flex w-100 justify-content-between">
                       <h5 className="mb-1">{song.title}</h5>
                     </div>

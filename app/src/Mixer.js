@@ -3,10 +3,10 @@ import {postData} from './Api'
 import React, { Component,useEffect,useState,useRef } from 'react';
 
 
-export default function Mixer() {
+export default function Mixer(props) {
     window.Tone = Tone;
     const [loading, setLoading] = useState(false);
-    const [greatSuccess, setGreatSuccess] = useState(false);
+    const [greatSuccess, setGreatSuccess] = useState(null);
     const form = useRef(null);
     const [errorScript, setErrorScript] = useState(null);
 
@@ -21,11 +21,15 @@ export default function Mixer() {
         // TODO: do some validation for a common format
         object["created"] = Date.now();
 
-        // TODO: perform transaction, (after verifying duplicates by hash on ipfs?)
+        const { mintAudio } = props.contract.methods;
+
         postData(object)
         .then( (hash) => {
-            setGreatSuccess(true);
             console.log("created ipfs hash: ", hash);
+            mintAudio(props.account,hash).send().then( trx => {
+                console.log("Transaction: ", trx);
+                setGreatSuccess(trx);
+            }).catch( (err) => alert("Error: " + err.message) );
         })
         .catch( (err) => alert("Error: " + err.message) )
         .finally( () => { setLoading(false); })
@@ -49,7 +53,7 @@ export default function Mixer() {
 
             { (greatSuccess) ?
                 <div className="alert alert-success" role="alert">
-                  Audio created successfully
+                  Audio created successfully <a href={"https://ropsten.etherscan.io/tx/" + greatSuccess.trx}    >{greatSuccess.trx}</a>
                 </div> : <span></span>
             }
 

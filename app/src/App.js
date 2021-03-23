@@ -1,7 +1,7 @@
 import './App.css';
 import React, { Component,useEffect,useState,useRef } from 'react';
 import Web3 from 'web3';
-import Audio from './Audio'
+import AudioDetail from './Audio'
 import Mixer from './Mixer'
 import TopSongs from './TopSongs'
 import Layout from './Layout'
@@ -12,7 +12,7 @@ function App() {
   const [account, setAccount ] = useState(null);
 
   useEffect(async () => {
-        const votingArtifact = require("./contracts/Voting.json");
+        const audioArtifact = require("./contracts/Audio.json");
         window.web3 = null;
         if (window.ethereum) {
             // use MetaMask's provider
@@ -31,9 +31,9 @@ function App() {
         window.web3.eth.getBlock('latest').then(console.log);
 
         const networkId = await window.web3.eth.net.getId();
-        const deployedNetwork = votingArtifact.networks[networkId];
+        const deployedNetwork = audioArtifact.networks[networkId];
         setContract(new window.web3.eth.Contract(
-            votingArtifact.abi,
+            audioArtifact.abi,
             deployedNetwork.address,
         ));
 
@@ -48,10 +48,10 @@ function App() {
   <BrowserRouter>
     <Layout>
         <Switch>
-            <Route path="/audio" component={Audio} />
+            <Route exact path="/audio/:audioId" render={(props) => <AudioDetail contract={contract} {...props} /> } />
             <Route path="/song" component={Audio} />
-            <Route path="/mixer" component={Mixer} />
-            <Route path="/" component={TopSongs}/>
+            <Route path="/mixer" render={(props) => <Mixer account={account} contract={contract} {...props} /> } />
+            <Route path="/" render={(props) => <TopSongs contract={contract} {...props} /> }/>
         </Switch>
      </Layout>
   </BrowserRouter>
