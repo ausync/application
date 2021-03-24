@@ -62,6 +62,7 @@ export default function AudioDetail(props) {
     window.Tone = Tone;
     const [resource, setResource] = useState(null);
     const [owner, setOwner] = useState(null);
+    const [started, setStarted] = useState(false);
 
     useEffect(async () => {
         if (!props.contract) {
@@ -73,7 +74,6 @@ export default function AudioDetail(props) {
             console.log("Token URI", url);
             getData(url).then((data) => {
                 setResource(data);
-                console.log("data from ipfs: ", data);
             }).catch( err => {
                 alert("Error occurred: " + err.message);
             });
@@ -86,6 +86,7 @@ export default function AudioDetail(props) {
     }, [props.contract]);
 
     const handleClick = () => {
+        setStarted(true);
         eval(resource.script);
         //oscillator();
     };
@@ -104,12 +105,17 @@ export default function AudioDetail(props) {
                             <img src="/wave2.png" height="135px"/>
                         </div>
                         <div>
+                            { (started)?
+                            <button className="btn btn-warning">
+                                started
+                            </button>:
                             <button onClick={handleClick} className="btn btn-success">
                                 start the music
                             </button>
+                            }
                         </div>
                         <div className="mt-5">
-                            Owner: <a href={"https://ropsten.etherscan.io/address/" + owner} target="_blank">{owner}</a>
+                            Owner: <a href={process.env.REACT_APP_ETH_SCAN + "/address/" + owner} target="_blank">{owner}</a>
                         </div>
                     </div>
                     <div className="col">

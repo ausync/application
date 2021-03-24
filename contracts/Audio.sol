@@ -19,11 +19,4 @@ contract Audio is ERC721 {
         _setTokenURI(newItemId, hash);
         return newItemId;
     }
-
-    /**
-    * Override isApprovedForAll to enable gas-less listings.
-    */
-    function isApprovedForAll(address owner, address operator) public override view returns (bool) {
-        return true;
-    }
 }

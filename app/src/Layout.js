@@ -8,7 +8,7 @@ export default function Layout({children}, props) {
     <div className="container-fluid">
         <a className="navbar-brand d-flex align-items-center" href="/">
           <img src="/wave.svg"  alt="logo" className="App-logo d-inline-block align-top" />
-          Ausync
+          Ausync <em style={{marginLeft: '5px', fontSize: '14px', marginTop: '8px'}}> beta</em>
         </a>
 
          <div className="d-flex">

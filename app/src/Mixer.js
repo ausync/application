@@ -25,14 +25,13 @@ export default function Mixer(props) {
 
         postData(object)
         .then( (hash) => {
-            console.log("created ipfs hash: ", hash);
-            mintAudio(props.account,hash).send().then( trx => {
+            mintAudio(props.account,hash).send({from: props.account}).then( trx => {
                 console.log("Transaction: ", trx);
                 setGreatSuccess(trx);
-            }).catch( (err) => alert("Error: " + err.message) );
+            }).catch( (err) => alert("Error: " + err.message) )
+            .finally( () => { setLoading(false); });
         })
         .catch( (err) => alert("Error: " + err.message) )
-        .finally( () => { setLoading(false); })
     }
 
     useEffect(() => {
@@ -51,9 +50,14 @@ export default function Mixer(props) {
         <div className="p-3">
             <h4 className="text-center">Submit an NFT audio on the blockchain</h4>
 
+            { (!window.ethereum) ?
+                <div className="alert alert-warning" role="alert">
+                      Web3 client not detected! Please ensure you have installed MetaMask or similar
+                </div> : <span></span>
+            }
             { (greatSuccess) ?
                 <div className="alert alert-success" role="alert">
-                  Audio created successfully <a href={"https://ropsten.etherscan.io/tx/" + greatSuccess.trx}    >{greatSuccess.trx}</a>
+                  Audio created successfully <a href={process.env.REACT_APP_ETH_SCAN + "/tx/" + greatSuccess.transactionHash} target="_blank">{greatSuccess.transactionHash}</a>
                 </div> : <span></span>
             }
 
