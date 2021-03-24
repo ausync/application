@@ -8,7 +8,7 @@ import {
   useRouteMatch,
   useParams
 } from "react-router-dom";
-
+import {seo} from './helpers/seo';
 
 function oscillator() {
     // TODO: this is not working, is not getting values from Tone.js
@@ -74,6 +74,7 @@ export default function AudioDetail(props) {
             console.log("Token URI", url);
             getData(url).then((data) => {
                 setResource(data);
+                seo({title: data.title, description: data.description});
             }).catch( err => {
                 alert("Error occurred: " + err.message);
             });

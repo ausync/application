@@ -1,7 +1,7 @@
 import * as Tone from 'tone'
 import {postData} from './Api'
 import React, { Component,useEffect,useState,useRef } from 'react';
-
+import {seo} from './helpers/seo';
 
 export default function Mixer(props) {
     window.Tone = Tone;
@@ -9,6 +9,8 @@ export default function Mixer(props) {
     const [greatSuccess, setGreatSuccess] = useState(null);
     const form = useRef(null);
     const [errorScript, setErrorScript] = useState(null);
+
+    seo({title: "Create audio script", description: "Create NFT audio on Ethereum blockchain using javascript"});
 
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -52,7 +54,7 @@ export default function Mixer(props) {
 
             { (!window.ethereum) ?
                 <div className="alert alert-warning" role="alert">
-                      Web3 client not detected! Please ensure you have installed MetaMask or similar
+                      Web3 client not detected! Please ensure you have installed <a href="https://metamask.io/" target="_blank">MetaMask</a> or similar
                 </div> : <span></span>
             }
             { (greatSuccess) ?
