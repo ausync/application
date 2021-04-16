@@ -2,6 +2,7 @@ import * as Tone from 'tone'
 import {postData} from './Api'
 import React, { Component,useEffect,useState,useRef } from 'react';
 import {seo} from './helpers/seo';
+import MixerUI from './helpers/mixerui';
 
 export default function Mixer(props) {
     window.Tone = Tone;
@@ -62,6 +63,8 @@ export default function Mixer(props) {
                   Audio created successfully <a href={process.env.REACT_APP_ETH_SCAN + "/tx/" + greatSuccess.transactionHash} target="_blank">{greatSuccess.transactionHash}</a>
                 </div> : <span></span>
             }
+
+            <MixerUI />
 
             <form ref={form} onSubmit={handleSubmit} className="needs-validation">
                 <div className="form-group">
