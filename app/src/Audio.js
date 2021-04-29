@@ -116,8 +116,14 @@ export default function AudioDetail(props) {
                             }
                         </div>
                         <div className="mt-5">
-                            Owner: <a href={process.env.REACT_APP_ETH_SCAN + "/address/" + owner} target="_blank">{owner}</a>
+                            <div>
+                                Owner: <a href={process.env.REACT_APP_ETH_SCAN + "/address/" + owner} target="_blank">{owner}</a>
+                            </div>
+                            <div>
+                                Token: <a href={process.env.REACT_APP_ETH_SCAN + "/token/" + props.contract.options.address + "?" + audioId } target="_blank">{audioId}</a>
+                            </div>
                         </div>
+                        
                     </div>
                     <div className="col">
                         <h1 className="h1">{resource.title}</h1>
